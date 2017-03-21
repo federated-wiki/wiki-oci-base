@@ -1,8 +1,11 @@
-FROM node:6.3.1
+FROM node:6.10.0-alpine
 
-RUN npm install wiki@0.9.3 -g
+RUN npm i -g wiki@0.10.3
 
-ENV PORT=5000
-EXPOSE 5000
+EXPOSE 3000
 
-ENTRYPOINT wiki -p $PORT -f
+RUN mkdir /root/.wiki/
+VOLUME /root/.wiki/
+WORKDIR /root/.wiki/
+
+CMD ["wiki"]
