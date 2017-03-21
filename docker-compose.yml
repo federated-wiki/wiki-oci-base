@@ -1,0 +1,9 @@
+version: '2'
+services:
+    wiki:
+        build: .
+        volumes:
+            - "/srv/wiki/:/root/.wiki/:z"
+        ports:
+            - "3000:3000"
+
