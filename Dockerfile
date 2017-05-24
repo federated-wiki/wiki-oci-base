@@ -1,6 +1,6 @@
-FROM node:6.10.0-alpine
+FROM node:6.10.3-alpine
 
-RUN npm i -g wiki@0.10.3
+RUN npm i -g wiki@0.11.3
 
 EXPOSE 3000
 
