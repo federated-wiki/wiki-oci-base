@@ -1,0 +1,7 @@
+version: '2'
+services:
+    wiki:
+        image: federatedwiki/base
+        command: ["wiki", "--autoseed", "--security_type", "friends", "--cookieSecret", "${COOKIESECRET}", "--session_duration", "14"]
+        volumes: ["./wiki/:/root/.wiki/:z"]
+        ports: ["3000:3000"]
