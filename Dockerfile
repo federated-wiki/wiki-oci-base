@@ -1,12 +1,14 @@
-FROM node:12-alpine
+FROM node:18-alpine
+
+ARG WIKI_TAG=0.22.0
 
 RUN apk add --no-cache bash git
-RUN npm i -g wiki@0.22.0
+RUN npm i -g wiki@${WIKI_TAG}
 
-RUN mkdir /root/.wiki/
-VOLUME /root/.wiki/
-WORKDIR /root/.wiki/
+USER node
+WORKDIR /home/wiki/
+RUN mkdir /home/node/.wiki/
 
+VOLUME /home/node/.wiki/
 EXPOSE 3000
 CMD ["wiki"]
-
