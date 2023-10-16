@@ -26,7 +26,7 @@ jobs:
         id: check-version
         with:
           version-command: |
-            grep IMAGE_TAG .env | cut -d"=" -f2
+            grep WIKI_TAG= Dockerfile | cut -d"=" -f2
 
       - name: Release new tag
         uses: ncipollo/release-action@v1
