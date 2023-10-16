@@ -14,7 +14,6 @@ on:
       ref:
         required: false
         type: string
-        default: ${{ github.ref }}
 
 jobs:
   call-build-and-push:
