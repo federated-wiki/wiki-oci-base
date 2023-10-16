@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  release:
+    types: [published]
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+        default: ${{ github.ref }}
+
+jobs:
+  call-build-and-push:
+    name: Call image build
+    uses: federated-wiki/workflows/.github/workflows/build-and-push.yml@main
+    if: ( inputs.ref == 0 )
+    with:
+      image-name: "base"
+    secrets: inherit
+  call-build-and-push-ref:
+    name: Call tagged image build
+    uses: federated-wiki/workflows/.github/workflows/build-and-push.yml@main
+    if: ( inputs.ref != 0 )
+    with:
+      image-name: "base"
+      ref: ${{ inputs.ref }}
+    secrets: inherit
