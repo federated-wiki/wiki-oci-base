@@ -1,7 +1,10 @@
 version: '2'
 services:
   wiki:
-    image: federatedwiki/base
+    image: localhost/federatedwiki/base:${IMAGE_TAG}
+    build:
+      args:
+        WIKI_TAG: ${IMAGE_TAG}
     command: ["wiki", "--autoseed", "--security_type", "friends", "--cookieSecret", "${COOKIESECRET}", "--session_duration", "14"]
-    volumes: ["./wiki/:/root/.wiki/:z"]
+    volumes: ["./.wiki/:/home/node/.wiki/:z"]
     ports: ["3000:3000"]
