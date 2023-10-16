@@ -9,6 +9,12 @@ on:
         required: true
         type: string
         default: ${{ github.ref }}
+  workflow_dispatch:
+    inputs:
+      ref:
+        required: false
+        type: string
+        default: ${{ github.ref }}
 
 jobs:
   call-build-and-push:
