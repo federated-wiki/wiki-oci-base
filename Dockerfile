@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:lts-alpine
 
 ARG WIKI_TAG=0.31.0
 
