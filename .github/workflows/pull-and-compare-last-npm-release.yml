@@ -1,7 +1,7 @@
 name: Pull and compare last NPM release
 on:
-#  schedule:
-#    - cron: '37 04 * * *'
+  schedule:
+    - cron: '37 04 * * *'
   workflow_dispatch:
 
 permissions:
