@@ -4,6 +4,10 @@ on:
 #    - cron: '37 04 * * *'
   workflow_dispatch:
 
+permissions:
+  pull_requests: write
+  contents: write
+
 jobs:
   pull-and-compare-release-versions:
     runs-on: ubuntu-latest
@@ -29,7 +33,30 @@ jobs:
           npm_version=`curl -sL https://registry.npmjs.org/wiki/latest | jq -r .version`
           echo $npm_version
           echo "version=$npm_version" >> $GITHUB_OUTPUT
-      - name: Call next workflow to increase version on a branch, create and merge a PR
+
+      - name: Check if we need to increase the version
         if: ${{ steps.dockerfile.outputs.version != steps.npm.outputs.version }}
         run: |
           echo Version ${{ steps.dockerfile.outputs.version }} in Dockerfile is not equal to the NPM version ${{ steps.npm.outputs.version }}.
+          exit 1
+
+      - name: Modify version numbers
+        if: ${{ steps.dockerfile.outputs.version != steps.npm.outputs.version }}
+        run: |
+          sed 's/${{ steps.dockerfile.outputs.version }}/${{ steps.npm.outputs.version }}/' -i Dockerfile .env
+      - name: Create Pull Request
+        id: pr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Increase version ${{ steps.dockerfile.outputs.version }} to ${{ steps.npm.outputs.version }}
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          branch: ${{ steps.npm.outputs.version }}
+          delete-branch: true
+          draft: false
+      - name: Merge Pull Request
+        if: ${{ steps.pr.outputs.pull-request-number }}
+        run: |
+          gh pr merge --merge --auto "${{ steps.pr.outputs.pull-request-number"
