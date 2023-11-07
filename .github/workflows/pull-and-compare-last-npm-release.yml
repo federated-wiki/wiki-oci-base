@@ -6,7 +6,9 @@ on:
 
 permissions:
   pull-requests: write
+  packages: write
   contents: write
+  id-token: write
 
 jobs:
   pull-and-compare-release-versions:
