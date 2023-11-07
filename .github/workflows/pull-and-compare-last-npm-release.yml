@@ -64,6 +64,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR: ${{ steps.pr.outputs.pull-request-number }}
 
-      - name: Call version change detection workflow
-        uses: ./.github/workflows/release-version.yml
-        secrets: inherit
+  call-release-version:
+    name: Call version change detection workflow
+    uses: ./.github/workflows/release-version.yml
+    secrets: inherit
