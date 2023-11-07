@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  pull_requests: write
+  pull-requests: write
   contents: write
 
 jobs:
@@ -59,4 +59,4 @@ jobs:
       - name: Merge Pull Request
         if: ${{ steps.pr.outputs.pull-request-number }}
         run: |
-          gh pr merge --merge --auto "${{ steps.pr.outputs.pull-request-number"
+          gh pr merge --merge --auto "${{ steps.pr.outputs.pull-request-number }}"
