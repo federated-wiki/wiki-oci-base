@@ -34,15 +34,10 @@ jobs:
           echo $npm_version
           echo "version=$npm_version" >> $GITHUB_OUTPUT
 
-      - name: Check if we need to increase the version
-        if: ${{ steps.dockerfile.outputs.version != steps.npm.outputs.version }}
-        run: |
-          echo Version ${{ steps.dockerfile.outputs.version }} in Dockerfile is not equal to the NPM version ${{ steps.npm.outputs.version }}.
-          exit 1
-
       - name: Modify version numbers
         if: ${{ steps.dockerfile.outputs.version != steps.npm.outputs.version }}
         run: |
+          echo Version ${{ steps.dockerfile.outputs.version }} in Dockerfile is not equal to the NPM version ${{ steps.npm.outputs.version }}.
           sed 's/${{ steps.dockerfile.outputs.version }}/${{ steps.npm.outputs.version }}/' -i Dockerfile .env
       - name: Create Pull Request
         id: pr
