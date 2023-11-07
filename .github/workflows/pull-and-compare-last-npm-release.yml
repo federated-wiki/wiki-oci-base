@@ -13,24 +13,23 @@ jobs:
       - name: Pull and register current version in Dockerfile
         id: dockerfile
         run: |
-          grep -P '(?<=WIKI_TAG=).*' -o Dockerfile
-          echo "version=`grep -P '(?<=WIKI_TAG=).*' -o Dockerfile`" >> $GITHUB_OUTPUT
-          echo $GITHUB_OUTPUT
+          dockerfile_version=`grep -P '(?<=WIKI_TAG=).*' -o Dockerfile`
+          echo $dockerfile_version
+          echo "version=$dockerfile_version" >> $GITHUB_OUTPUT
       - name: Pull and register current version in Compose environment
         id: environment
         run: |
-          grep -P '(?<=IMAGE_TAG=).*' -o .env
-          echo "version=`grep -P '(?<=IMAGE_TAG=).*' -o .env`" >> $GITHUB_OUTPUT
-          echo $GITHUB_OUTPUT
+          environment_version=`grep -P '(?<=IMAGE_TAG=).*' -o .env`
+          echo $environment_version
+          echo "version=$environment_version" >> $GITHUB_OUTPUT
       - name: Pull and register current version at NPM
         if: ${{ steps.dockerfile.outputs.version == steps.environment.outputs.version }}
         id: npm
         run: |
-          curl -sL https://registry.npmjs.org/wiki/latest | jq -r .version
-          echo "version=`curl -sL https://registry.npmjs.org/wiki/latest | jq -r .version`" >> $GITHUB_OUTPUT
-          echo $GITHUB_OUTPUT
+          npm_version=`curl -sL https://registry.npmjs.org/wiki/latest | jq -r .version`
+          echo $npm_version
+          echo "version=$npm_version" >> $GITHUB_OUTPUT
       - name: Call next workflow to increase version on a branch, create and merge a PR
-        if: ${{ steps.dockerfile.outputs.version == steps.npm.outputs.version }}
+        if: ${{ steps.dockerfile.outputs.version != steps.npm.outputs.version }}
         run: |
-          echo ${{ steps.dockerfile.outputs.version }}
-          echo ${{ steps.npm.outputs.version }}
+          echo Version ${{ steps.dockerfile.outputs.version }} in Dockerfile is not equal to the NPM version ${{ steps.npm.outputs.version }}.
