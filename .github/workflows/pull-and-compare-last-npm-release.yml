@@ -1,0 +1,26 @@
+name: Pull and compare last NPM release
+on:
+#  schedule:
+#    - cron: '37 04 * * *'
+  workflow_dispatch:
+
+jobs:
+  pull-and-compare-release-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pull and register current version in Dockerfile
+        id: dockerfile
+        run: echo "version=`grep -P '(?<=WIKI_TAG=).*' -o Dockerfile`" >> $GITHUB_OUTPUT
+      - name: Pull and register current version in Compose environment
+        id: environment
+        run: echo "version=`grep -P '(?<=IMAGE_TAG=).*' -o .env`" >> $GITHUB_OUTPUT
+      - name: Pull and register current version at NPM
+        if: ${{ steps.dockerfile.outputs.version == steps.environment.outputs.version }}
+        id: npm
+        run: echo "version=`curl -sL https://registry.npmjs.org/wiki/latest | jq -r .version`" >> $GITHUB_OUTPUT
+
+      - name: Call next workflow to increase version on a branch, create and merge a PR
+        if: ${{ steps.dockerfile.outputs.version == steps.npm.outputs.version }}
+        run: false
