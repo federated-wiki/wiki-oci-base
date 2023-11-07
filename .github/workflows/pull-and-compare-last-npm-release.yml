@@ -51,7 +51,15 @@ jobs:
           branch: ${{ steps.npm.outputs.version }}
           delete-branch: true
           draft: false
+          title: Increase version ${{ steps.dockerfile.outputs.version }} to ${{ steps.npm.outputs.version }}
+          body: |
+            The new wiki version ${{ steps.npm.outputs.version }} was found on NPM.
+
+            Here we are updating from our old version ${{ steps.dockerfile.outputs.version }}.
       - name: Merge Pull Request
         if: ${{ steps.pr.outputs.pull-request-number }}
         run: |
-          gh pr merge --merge --auto "${{ steps.pr.outputs.pull-request-number }}"
+          gh pr merge --merge --auto "$PR"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ steps.pr.outputs.pull-request-number }}
