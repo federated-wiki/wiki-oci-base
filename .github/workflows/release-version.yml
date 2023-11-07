@@ -5,6 +5,11 @@ on:
     branches:
       - 'main'
   workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+        default: ${{ github.ref }}
 
 permissions:
   pull-requests: write
@@ -27,6 +32,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 2
+          ref: ${{ inputs.ref }}
 
       - name: Detect and tag new version
         uses: salsify/action-detect-and-tag-new-version@v2

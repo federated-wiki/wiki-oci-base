@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   pull-and-compare-release-versions:
+    name: Pull and compare release versions
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -70,4 +71,6 @@ jobs:
     name: Call version change detection workflow
     needs: ['pull-and-compare-release-versions']
     uses: ./.github/workflows/release-version.yml
+    with:
+      ref: main
     secrets: inherit
