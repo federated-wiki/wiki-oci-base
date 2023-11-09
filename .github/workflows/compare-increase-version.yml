@@ -1,4 +1,4 @@
-name: Pull and compare last NPM release
+name: Compare and increase version
 on:
   schedule:
     - cron: '37 04 * * *'
@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   compare-increase-version:
-    name: Compare and increase release versions
+    name: Compare and conditionally increase release version
     runs-on: ubuntu-latest
     outputs:
       pull-request-number: ${{ steps.pr.outputs.pull-request-number }}
