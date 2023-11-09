@@ -11,9 +11,11 @@ permissions:
   id-token: write
 
 jobs:
-  pull-and-compare-release-versions:
-    name: Pull and compare release versions
+  compare-increase-version:
+    name: Compare and increase release versions
     runs-on: ubuntu-latest
+    outputs:
+      pull-request-number: ${{ steps.pr.outputs.pull-request-number }}
     steps:
       - uses: actions/checkout@v4
 
@@ -37,13 +39,14 @@ jobs:
           echo $npm_version
           echo "version=$npm_version" >> $GITHUB_OUTPUT
 
-      - name: Modify version numbers
+      - name: Modify version numbers, if needed
         if: ${{ steps.dockerfile.outputs.version != steps.npm.outputs.version }}
         run: |
           echo Version ${{ steps.dockerfile.outputs.version }} in Dockerfile is not equal to the NPM version ${{ steps.npm.outputs.version }}.
           sed 's/${{ steps.dockerfile.outputs.version }}/${{ steps.npm.outputs.version }}/' -i Dockerfile .env
-      - name: Create Pull Request
+      - name: Create Pull Request, if needed
         id: pr
+        if: ${{ steps.dockerfile.outputs.version != steps.npm.outputs.version }}
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -51,7 +54,7 @@ jobs:
           committer: GitHub <noreply@github.com>
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           signoff: false
-          branch: ${{ steps.npm.outputs.version }}
+          branch: upgrade/${{ steps.npm.outputs.version }}
           delete-branch: true
           draft: false
           title: Increase version ${{ steps.dockerfile.outputs.version }} to ${{ steps.npm.outputs.version }}
@@ -59,7 +62,7 @@ jobs:
             The new wiki version ${{ steps.npm.outputs.version }} was found on NPM.
 
             Here we are updating from our old version ${{ steps.dockerfile.outputs.version }}.
-      - name: Merge Pull Request
+      - name: Merge Pull Request, if needed
         if: ${{ steps.pr.outputs.pull-request-number }}
         run: |
           gh pr merge --merge --auto "$PR"
@@ -67,10 +70,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR: ${{ steps.pr.outputs.pull-request-number }}
 
-  call-release-version:
-    name: Call version change detection workflow
-    needs: ['pull-and-compare-release-versions']
-    uses: ./.github/workflows/release-version.yml
-    with:
-      ref: main
-    secrets: inherit
+      - name: "Show Pull Request number"
+        run: echo "${{ steps.pr.outputs.pull-request-number }}"
+
+  # call-release:
+  #   name: Call version change detection workflow
+  #   needs: ['compare-increase-version']
+  #   if: needs.compare-increase-version.outputs.pull-request-number != null
+  #   uses: ./.github/workflows/release-increased-version.yml
+  #   with:
+  #     ref: main
+  #   secrets: inherit

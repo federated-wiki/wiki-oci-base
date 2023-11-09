@@ -1,4 +1,4 @@
-name: Detect and tag new version
+name: Detect, tag and release a new version
 
 on:
   push:
