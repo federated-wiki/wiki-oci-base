@@ -70,14 +70,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR: ${{ steps.pr.outputs.pull-request-number }}
 
-      - name: "Show Pull Request number"
-        run: echo "${{ steps.pr.outputs.pull-request-number }}"
-
-  # call-release:
-  #   name: Call version change detection workflow
-  #   needs: ['compare-increase-version']
-  #   if: needs.compare-increase-version.outputs.pull-request-number != null
-  #   uses: ./.github/workflows/release-increased-version.yml
-  #   with:
-  #     ref: main
-  #   secrets: inherit
+  call-release:
+    name: Call version change detection workflow
+    needs: ['compare-increase-version']
+    if: needs.compare-increase-version.outputs.pull-request-number != ''
+    uses: ./.github/workflows/release-increased-version.yml
+    with:
+      ref: main
+    secrets: inherit
