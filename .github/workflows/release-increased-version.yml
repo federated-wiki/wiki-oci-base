@@ -58,3 +58,12 @@ jobs:
     with:
       ref: "refs/tags/v${{ needs.tag-release.outputs.current-version }}"
     secrets: inherit
+
+  call-upgrade:
+    name: Upgrade dependant image
+    needs: ['tag-release', 'call-build-push']
+    if: needs.tag-release.outputs.previous-version != needs.tag-release.outputs.current-version
+    uses: federated-wiki/wiki-docker-plugins/.github/workflows/increase-base-version.yml@main
+    with:
+      previous-version: ${{ needs.tag-release.outputs.previous-version }}
+      next-version: ${{ needs.tag-release.outputs.current-version }}
