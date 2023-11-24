@@ -1,6 +1,6 @@
 FROM node:lts-alpine
 
-ARG WIKI_TAG=0.32.1
+ARG WIKI_TAG=0.33.0
 
 RUN apk add --no-cache bash git
 RUN npm i -g wiki@${WIKI_TAG}
