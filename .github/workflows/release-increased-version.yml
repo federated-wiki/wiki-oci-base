@@ -58,3 +58,20 @@ jobs:
     with:
       ref: "refs/tags/v${{ needs.tag-release.outputs.current-version }}"
     secrets: inherit
+
+  update-downstream:
+    name: Update downstream distribution
+    needs: ['call-build-push']
+    uses: actions/github-script@v7
+    if: needs.tag-release.outputs.previous-version != needs.tag-release.outputs.current-version
+    with:
+      script: |
+        github.rest.actions.createWorkflowDispatch({
+          owner: context.repo.owner,
+          repo: 'wiki-oci-distribution',
+          workflow_id: 'increase-base-version.yml',
+          ref: 'main',
+          inputs:
+            previous-version: "${{ needs.tag-release.outputs.previous-version }}",
+            next-version: "${{ needs.tag-release.outputs.current-version }}"
+        })
